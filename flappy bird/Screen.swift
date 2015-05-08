@@ -118,13 +118,11 @@ class Screen : UIView {
         {
                 score++
             flagScore1++
-                println(score)
         }
         if chimney2.chimneyBottom.center.x <= (super.bounds.width / 3) && flagScore2 == 0
         {
             score++
             flagScore2++
-            println(score)
 
             
         }

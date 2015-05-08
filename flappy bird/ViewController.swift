@@ -45,27 +45,14 @@ class ViewController : UIViewController, UICollisionBehaviorDelegate{
             timerFlag++
             
         }
-        
-        var push = UIPushBehavior(items: [bird.birdView], mode: UIPushBehaviorMode.Instantaneous)
-        push.setAngle(CGFloat(-M_PI_2), magnitude: CGFloat(0.8))
-        
-        for item in animator.behaviors {
-            
-            animator.removeBehavior(item as! UIDynamicBehavior)
-        }
-        
-        animator.addBehavior(gravity)
-        animator.addBehavior(push)
+        bird.fly(animator)
+
         collision.collisionDelegate = self
         animator.addBehavior(collision)
-        
-        
-        
     }
     // tạo va chạm
     var animator : UIDynamicAnimator!
     var collision : UICollisionBehavior!
-    var gravity: UIGravityBehavior!
     
     func collisionBehavior(behavior: UICollisionBehavior, beganContactForItem item: UIDynamicItem, withBoundaryIdentifier identifier: NSCopying, atPoint p: CGPoint){
         // nếu chạm vào thì chết
@@ -82,19 +69,13 @@ class ViewController : UIViewController, UICollisionBehaviorDelegate{
             timer?.invalidate()
             timer = nil
             // hiển thị GameOver
-            
-            
             gameOver()
         }
-        if bird.birdView.center.y > (view.bounds.height - 20) || bird.birdView.center.y < 0 {
-            animator.removeAllBehaviors()
-            bird.birdView.center.y =  view.bounds.height - 20
-            var transfrom = CGAffineTransformMakeRotation(CGFloat(M_PI_2))
-            bird.birdView.transform = transfrom
-            
-            
-            
-        }
+        // Xoay chim chúi xuống đất
+        bird.dead(collision, animator: animator)
+
+        
+        
     }
     // tạo nút pause
     var btnPause : UIButton!
@@ -145,17 +126,20 @@ class ViewController : UIViewController, UICollisionBehaviorDelegate{
         if (btnPause != nil){
             btnPause.removeFromSuperview()
         }
+      
+
     }
     func setNewgame(){
         animator = UIDynamicAnimator (referenceView: view)
         
         tap = UITapGestureRecognizer(target: self, action: "handleTap:")
         view.addGestureRecognizer(tap)
+
         bird = Bird()
         bird.birdView.center.x = view.bounds.width / 3
         bird.birdView.center.y = view.center.y
-        gravity = UIGravityBehavior(items: [bird.birdView])
         collision = UICollisionBehavior(items: [bird.birdView])
+
         screen = Screen(frame: view.frame, collision: collision)
         view.addSubview(screen)
         screen.newgame()
